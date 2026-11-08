@@ -1,0 +1,9 @@
+res://_perf_diag.gd
+res://scripts/background_video.gd
+res://scripts/endless_book.gd
+res://scripts/fanshu2.gd
+res://scripts/fanshu.gd
+res://scripts/image_loader_manager.gd
+res://scripts/page_cache.gd
+res://scenes/main_shenpan.tscn
+res://README.md

@@ -1,0 +1,71 @@
+[gd_scene load_steps=15 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/BookAnimated.fbx" id="book_fbx"]
+[ext_resource type="Script" path="res://scripts/endless_book.gd" id="book_script"]
+[ext_resource type="PackedScene" path="res://scenes/page.tscn" id="page_scene"]
+[ext_resource type="PackedScene" path="res://assets/models/BookStandinClosedFront.fbx" id="standin0"]
+[ext_resource type="PackedScene" path="res://assets/models/BookStandinOpenFront.fbx" id="standin1"]
+[ext_resource type="PackedScene" path="res://assets/models/BookStandinOpenMiddle_High.fbx" id="standin2"]
+[ext_resource type="PackedScene" path="res://assets/models/BookStandinOpenBack.fbx" id="standin3"]
+[ext_resource type="PackedScene" path="res://assets/models/BookStandinClosedBack.fbx" id="standin4"]
+[ext_resource type="Material" path="res://assets/materials/book_cover.tres" id="book_cover"]
+[ext_resource type="Material" path="res://assets/materials/book_page_back.tres" id="book_page_back"]
+[ext_resource type="Material" path="res://assets/materials/book_page_front.tres" id="book_page_front"]
+[ext_resource type="Material" path="res://assets/materials/book_page_left.tres" id="book_page_left"]
+[ext_resource type="Material" path="res://assets/materials/book_page_right.tres" id="book_page_right"]
+
+[node name="Book" type="Node3D"]
+script = ExtResource("book_script")
+material_cover = ExtResource("book_cover")
+material_page_back = ExtResource("book_page_back")
+material_page_front = ExtResource("book_page_front")
+material_page_left = ExtResource("book_page_left")
+material_page_right = ExtResource("book_page_right")
+max_pages_turning_count = 4
+
+[node name="BookAnimated" parent="." instance=ExtResource("book_fbx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+visible = false
+
+[node name="Standins" type="Node3D" parent="."]
+
+[node name="BookStandinClosedFront" parent="Standins" instance=ExtResource("standin0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+visible = false
+
+[node name="BookStandinOpenFront" parent="Standins" instance=ExtResource("standin1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+visible = false
+
+[node name="BookStandinOpenMiddle_High" parent="Standins" instance=ExtResource("standin2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="BookStandinOpenBack" parent="Standins" instance=ExtResource("standin3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+visible = false
+
+[node name="BookStandinClosedBack" parent="Standins" instance=ExtResource("standin4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+visible = false
+
+[node name="Pages" type="Node3D" parent="."]
+
+[node name="Page" parent="Pages" instance=ExtResource("page_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+visible = false
+
+[node name="Page2" parent="Pages" instance=ExtResource("page_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+visible = false
+
+[node name="Page3" parent="Pages" instance=ExtResource("page_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+visible = false
+
+[node name="Page4" parent="Pages" instance=ExtResource("page_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+visible = false
+
+[node name="Page5" parent="Pages" instance=ExtResource("page_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+visible = false

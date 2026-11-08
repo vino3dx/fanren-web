@@ -1,0 +1,662 @@
+[gd_scene load_steps=20 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/book.tscn" id="book"]
+[ext_resource type="Script" path="res://scripts/fanshu2.gd" id="fanshu"]
+[ext_resource type="Script" path="res://scripts/feng_mian_manager.gd" id="fengmian"]
+[ext_resource type="Script" path="res://scripts/image_loader_manager.gd" id="imgloader"]
+[ext_resource type="Script" path="res://scripts/simple_touch_pad.gd" id="touchpad"]
+[ext_resource type="Script" path="res://scripts/background_video.gd" id="bgvideo"]
+[ext_resource type="Script" path="res://scripts/an_li_manager.gd" id="anli"]
+[ext_resource type="Material" path="res://assets/materials/page_front.tres" id="page_front"]
+[ext_resource type="Material" path="res://assets/materials/book_page_left.tres" id="page_left"]
+[ext_resource type="Material" path="res://assets/materials/table_white.tres" id="mat_white"]
+[ext_resource type="Texture2D" path="res://assets/ui/返回目录按钮.png" id="tex_Resources_返回目录按钮_png"]
+[ext_resource type="Texture2D" path="res://assets/ui/返回封面.png" id="tex_返回封面_png"]
+[ext_resource type="Texture2D" path="res://assets/ui/复议案例.png" id="tex_Resources_复议案例_png"]
+[ext_resource type="Texture2D" path="res://assets/ui/翻页按钮.png" id="tex_Resources_翻页按钮_png"]
+
+[sub_resource type="Environment" id="env"]
+background_mode = 1
+background_color = Color(0.19215687, 0.3019608, 0.4745098, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.212, 0.227, 0.259, 1)
+ambient_light_energy = 1.0
+
+[sub_resource type="PlaneMesh" id="box_table"]
+size = Vector2(10, 10)
+
+[sub_resource type="BoxShape3D" id="shape_left"]
+size = Vector3(0.30866468, 0.0023140425, 0.37161744)
+
+[sub_resource type="BoxShape3D" id="shape_right"]
+size = Vector3(0.30866468, 0.0023140425, 0.37161744)
+
+[node name="Main" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("env")
+
+[node name="Main Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.55, 0)
+fov = 50.0
+near = 0.3
+far = 1000.0
+
+[node name="Directional Light" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, -0.383022, 0.321394, 0, 0.642788, 0.766044, -0.5, -0.663414, 0.55667, 0, 3, 0)
+light_color = Color(1, 0.95686275, 0.8392157, 1)
+light_energy = 1.0
+shadow_enabled = true
+
+
+[node name="Book" parent="." instance=ExtResource("book")]
+
+[node name="VideoBackground" type="Node3D" parent="."]
+script = ExtResource("bgvideo")
+camera = NodePath("../Main Camera")
+
+[node name="SimpleTouchPad" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.096, 0, 0)
+script = ExtResource("touchpad")
+main_camera = NodePath("../Main Camera")
+left_page_collider = NodePath("Page Left")
+right_page_collider = NodePath("Page Right")
+
+[node name="Page Left" type="StaticBody3D" parent="SimpleTouchPad"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2675, 0.039, -0.002)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SimpleTouchPad/Page Left"]
+shape = SubResource("shape_left")
+
+[node name="Page Right" type="StaticBody3D" parent="SimpleTouchPad"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.075, 0.039, -0.002)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SimpleTouchPad/Page Right"]
+shape = SubResource("shape_right")
+
+[node name="ImageLoader" type="Node" parent="."]
+script = ExtResource("imgloader")
+page_material_template = ExtResource("page_front")
+
+[node name="FengMianManager" type="Node" parent="."]
+script = ExtResource("fengmian")
+canvas_path = NodePath("../Cover")
+canvas2_path = NodePath("../UI_Book")
+
+[node name="UI_Top" type="CanvasLayer" parent="."]
+layer = 1
+
+[node name="Root" type="Control" parent="UI_Top"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="返回目录" type="TextureButton" parent="UI_Top/Root"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 1188
+offset_top = 878
+offset_right = 1946
+offset_bottom = 1102
+pivot_offset = Vector2(379, 112)
+scale = Vector2(0.58, 0.58)
+texture_normal = ExtResource("tex_Resources_返回目录按钮_png")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="返回封面" type="TextureButton" parent="UI_Top/Root"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 1188
+offset_top = 878
+offset_right = 1946
+offset_bottom = 1102
+pivot_offset = Vector2(379, 112)
+scale = Vector2(0.58, 0.58)
+texture_normal = ExtResource("tex_返回封面_png")
+ignore_texture_size = true
+stretch_mode = 0
+[node name="Cover" type="CanvasLayer" parent="."]
+layer = 5
+
+[node name="Root" type="Control" parent="Cover"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Image" type="TextureRect" parent="Cover/Root"]
+anchor_left = 0
+anchor_top = 0
+anchor_right = 1
+anchor_bottom = 1
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+pivot_offset = Vector2(1920, 1080)
+texture = ExtResource("tex_Resources_复议案例_png")
+expand_mode = 1
+stretch_mode = 0
+mouse_filter = 0
+[node name="UI_Book" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="Root" type="Control" parent="UI_Book"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Panel" type="Control" parent="UI_Book/Root"]
+anchor_left = 0
+anchor_top = 0
+anchor_right = 1
+anchor_bottom = 1
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+pivot_offset = Vector2(1920, 1080)
+mouse_filter = 2
+
+[node name="下一页" type="TextureButton" parent="UI_Book/Root/Panel"]
+anchor_left = 1
+anchor_top = 1
+anchor_right = 1
+anchor_bottom = 1
+offset_left = -774
+offset_top = -415
+offset_right = -570
+offset_bottom = -267
+pivot_offset = Vector2(204, 148)
+visible = false
+texture_normal = ExtResource("tex_Resources_翻页按钮_png")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="推动中国法治进程典型案例" type="Control" parent="UI_Book/Root/Panel"]
+anchor_left = 0
+anchor_top = 0
+anchor_right = 1
+anchor_bottom = 1
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+pivot_offset = Vector2(1920, 1080)
+mouse_filter = 2
+script = ExtResource("anli")
+book_path = NodePath("../../../../Book")
+buttons = [NodePath("Button (Legacy)"), NodePath("Button (Legacy) (1)"), NodePath("Button (Legacy) (2)"), NodePath("Button (Legacy) (3)"), NodePath("Button (Legacy) (4)"), NodePath("Button (Legacy) (5)"), NodePath("Button (Legacy) (6)"), NodePath("Button (Legacy) (7)"), NodePath("Button (Legacy) (8)"), NodePath("Button (Legacy) (9)")]
+pages = PackedInt32Array(5, 9, 11, 15, 17, 21, 23, 27, 29, 31)
+
+[node name="Button (Legacy)" type="Button" parent="UI_Book/Root/Panel/推动中国法治进程典型案例"]
+anchor_left = 0
+anchor_top = 0
+anchor_right = 0
+anchor_bottom = 0
+offset_left = 544
+offset_top = 657.4685
+offset_right = 1887.9
+offset_bottom = 771.3372
+pivot_offset = Vector2(0, 0)
+flat = true
+focus_mode = 0
+
+[node name="Button (Legacy) (1)" type="Button" parent="UI_Book/Root/Panel/推动中国法治进程典型案例"]
+anchor_left = 0
+anchor_top = 0
+anchor_right = 0
+anchor_bottom = 0
+offset_left = 544
+offset_top = 818.0896
+offset_right = 1887.9
+offset_bottom = 923.1
+pivot_offset = Vector2(0, 0)
+flat = true
+focus_mode = 0
+
+[node name="Button (Legacy) (2)" type="Button" parent="UI_Book/Root/Panel/推动中国法治进程典型案例"]
+anchor_left = 0
+anchor_top = 0
+anchor_right = 0
+anchor_bottom = 0
+offset_left = 544
+offset_top = 951
+offset_right = 1887.9
+offset_bottom = 1026.8194
+pivot_offset = Vector2(0, 0)
+flat = true
+focus_mode = 0
+
+[node name="Button (Legacy) (3)" type="Button" parent="UI_Book/Root/Panel/推动中国法治进程典型案例"]
+anchor_left = 0
+anchor_top = 0
+anchor_right = 0
+anchor_bottom = 0
+offset_left = 544
+offset_top = 1077.7955
+offset_right = 1887.9
+offset_bottom = 1182.8001
+pivot_offset = Vector2(0, 0)
+flat = true
+focus_mode = 0
+
+[node name="Button (Legacy) (4)" type="Button" parent="UI_Book/Root/Panel/推动中国法治进程典型案例"]
+anchor_left = 0
+anchor_top = 0
+anchor_right = 0
+anchor_bottom = 0
+offset_left = 544
+offset_top = 1227.1804
+offset_right = 1887.9
+offset_bottom = 1320.6308
+pivot_offset = Vector2(0, 0)
+flat = true
+focus_mode = 0
+
+[node name="Button (Legacy) (5)" type="Button" parent="UI_Book/Root/Panel/推动中国法治进程典型案例"]
+anchor_left = 0
+anchor_top = 0
+anchor_right = 0
+anchor_bottom = 0
+offset_left = 544
+offset_top = 1382
+offset_right = 1887.9
+offset_bottom = 1475.4504
+pivot_offset = Vector2(0, 0)
+flat = true
+focus_mode = 0
+
+[node name="Button (Legacy) (6)" type="Button" parent="UI_Book/Root/Panel/推动中国法治进程典型案例"]
+anchor_left = 0
+anchor_top = 0
+anchor_right = 0
+anchor_bottom = 0
+offset_left = 544
+offset_top = 1511
+offset_right = 1887.9
+offset_bottom = 1587.4419
+pivot_offset = Vector2(0, 0)
+flat = true
+focus_mode = 0
+
+[node name="Button (Legacy) (7)" type="Button" parent="UI_Book/Root/Panel/推动中国法治进程典型案例"]
+anchor_left = 0
+anchor_top = 0
+anchor_right = 0
+anchor_bottom = 0
+offset_left = 544
+offset_top = 1632
+offset_right = 1887.9
+offset_bottom = 1740.9281
+pivot_offset = Vector2(0, 0)
+flat = true
+focus_mode = 0
+
+[node name="Button (Legacy) (8)" type="Button" parent="UI_Book/Root/Panel/推动中国法治进程典型案例"]
+anchor_left = 0
+anchor_top = 0
+anchor_right = 0
+anchor_bottom = 0
+offset_left = 1921
+offset_top = 530.35925
+offset_right = 3264.9
+offset_bottom = 604.14175
+pivot_offset = Vector2(0, 0)
+flat = true
+focus_mode = 0
+
+[node name="Button (Legacy) (9)" type="Button" parent="UI_Book/Root/Panel/推动中国法治进程典型案例"]
+anchor_left = 0
+anchor_top = 0
+anchor_right = 0
+anchor_bottom = 0
+offset_left = 1950.434
+offset_top = 651
+offset_right = 3261.9002
+offset_bottom = 759.9281
+pivot_offset = Vector2(0, 0)
+flat = true
+focus_mode = 0
+
+[node name="全国复议案例" type="Control" parent="UI_Book/Root/Panel"]
+anchor_left = 0
+anchor_top = 0
+anchor_right = 1
+anchor_bottom = 1
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+pivot_offset = Vector2(1920, 1080)
+mouse_filter = 2
+script = ExtResource("anli")
+book_path = NodePath("../../../../Book")
+buttons = [NodePath("Button (Legacy) (5)"), NodePath("Button (Legacy) (6)"), NodePath("Button (Legacy) (7)"), NodePath("Button (Legacy) (8)"), NodePath("Button (Legacy) (9)")]
+pages = PackedInt32Array(35, 39, 41, 45, 47)
+
+[node name="Button (Legacy) (5)" type="Button" parent="UI_Book/Root/Panel/全国复议案例"]
+anchor_left = 0
+anchor_top = 0
+anchor_right = 0
+anchor_bottom = 0
+offset_left = 1942
+offset_top = 914
+offset_right = 3285.9
+offset_bottom = 993.45
+pivot_offset = Vector2(0, 0)
+flat = true
+focus_mode = 0
+
+[node name="Button (Legacy) (6)" type="Button" parent="UI_Book/Root/Panel/全国复议案例"]
+anchor_left = 0
+anchor_top = 0
+anchor_right = 0
+anchor_bottom = 0
+offset_left = 1952
+offset_top = 1024
+offset_right = 3295.9
+offset_bottom = 1103.45
+pivot_offset = Vector2(0, 0)
+flat = true
+focus_mode = 0
+
+[node name="Button (Legacy) (7)" type="Button" parent="UI_Book/Root/Panel/全国复议案例"]
+anchor_left = 0
+anchor_top = 0
+anchor_right = 0
+anchor_bottom = 0
+offset_left = 1941
+offset_top = 1145
+offset_right = 3284.9
+offset_bottom = 1219.8112
+pivot_offset = Vector2(0, 0)
+flat = true
+focus_mode = 0
+
+[node name="Button (Legacy) (8)" type="Button" parent="UI_Book/Root/Panel/全国复议案例"]
+anchor_left = 0
+anchor_top = 0
+anchor_right = 0
+anchor_bottom = 0
+offset_left = 1937.3
+offset_top = 1253
+offset_right = 3281.2
+offset_bottom = 1333
+pivot_offset = Vector2(0, 0)
+flat = true
+focus_mode = 0
+
+[node name="Button (Legacy) (9)" type="Button" parent="UI_Book/Root/Panel/全国复议案例"]
+anchor_left = 0
+anchor_top = 0
+anchor_right = 0
+anchor_bottom = 0
+offset_left = 1937.3
+offset_top = 1368.7
+offset_right = 3281.2
+offset_bottom = 1448.7
+pivot_offset = Vector2(0, 0)
+flat = true
+focus_mode = 0
+
+[node name="全国执法案例" type="Control" parent="UI_Book/Root/Panel"]
+anchor_left = 0
+anchor_top = 0
+anchor_right = 1
+anchor_bottom = 1
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+pivot_offset = Vector2(1920, 1080)
+mouse_filter = 2
+script = ExtResource("anli")
+book_path = NodePath("../../../../Book")
+buttons = [NodePath("Button (Legacy) (10)"), NodePath("Button (Legacy) (11)"), NodePath("Button (Legacy) (12)"), NodePath("Button (Legacy) (13)"), NodePath("Button (Legacy) (14)")]
+pages = PackedInt32Array(51, 53, 57, 59, 61)
+
+[node name="Button (Legacy) (10)" type="Button" parent="UI_Book/Root/Panel/全国执法案例"]
+anchor_left = 0.5
+anchor_top = 0
+anchor_right = 0.5
+anchor_bottom = 0
+offset_left = -1353.94995
+offset_top = 632
+offset_right = -10.05005
+offset_bottom = 712
+pivot_offset = Vector2(671.94995, 0)
+flat = true
+focus_mode = 0
+
+[node name="Button (Legacy) (11)" type="Button" parent="UI_Book/Root/Panel/全国执法案例"]
+anchor_left = 0.5
+anchor_top = 0
+anchor_right = 0.5
+anchor_bottom = 0
+offset_left = -1353.94995
+offset_top = 743.42017
+offset_right = -10.05005
+offset_bottom = 823.42017
+pivot_offset = Vector2(671.94995, 0)
+flat = true
+focus_mode = 0
+
+[node name="Button (Legacy) (12)" type="Button" parent="UI_Book/Root/Panel/全国执法案例"]
+anchor_left = 0.5
+anchor_top = 0
+anchor_right = 0.5
+anchor_bottom = 0
+offset_left = -1353.94995
+offset_top = 862.52
+offset_right = -10.05005
+offset_bottom = 942.52
+pivot_offset = Vector2(671.94995, 0)
+flat = true
+focus_mode = 0
+
+[node name="Button (Legacy) (13)" type="Button" parent="UI_Book/Root/Panel/全国执法案例"]
+anchor_left = 0.5
+anchor_top = 0
+anchor_right = 0.5
+anchor_bottom = 0
+offset_left = -1353.94995
+offset_top = 964.32007
+offset_right = -10.05005
+offset_bottom = 1044.32007
+pivot_offset = Vector2(671.94995, 0)
+flat = true
+focus_mode = 0
+
+[node name="Button (Legacy) (14)" type="Button" parent="UI_Book/Root/Panel/全国执法案例"]
+anchor_left = 0.5
+anchor_top = 0
+anchor_right = 0.5
+anchor_bottom = 0
+offset_left = -1353.94995
+offset_top = 1069.9202
+offset_right = -10.05005
+offset_bottom = 1149.9202
+pivot_offset = Vector2(671.94995, 0)
+flat = true
+focus_mode = 0
+
+[node name="乐山复议案例" type="Control" parent="UI_Book/Root/Panel"]
+anchor_left = 0
+anchor_top = 0
+anchor_right = 1
+anchor_bottom = 1
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+pivot_offset = Vector2(1920, 1080)
+mouse_filter = 2
+script = ExtResource("anli")
+book_path = NodePath("../../../../Book")
+buttons = [NodePath("Button (Legacy) (10)"), NodePath("Button (Legacy) (11)"), NodePath("Button (Legacy) (12)"), NodePath("Button (Legacy) (13)"), NodePath("Button (Legacy) (14)")]
+pages = PackedInt32Array(66, 68, 71, 73, 77)
+
+[node name="Button (Legacy) (10)" type="Button" parent="UI_Book/Root/Panel/乐山复议案例"]
+anchor_left = 0
+anchor_top = 0
+anchor_right = 0
+anchor_bottom = 0
+offset_left = 556.30005
+offset_top = 1299
+offset_right = 1900.19995
+offset_bottom = 1379
+pivot_offset = Vector2(0, 0)
+flat = true
+focus_mode = 0
+
+[node name="Button (Legacy) (11)" type="Button" parent="UI_Book/Root/Panel/乐山复议案例"]
+anchor_left = 0
+anchor_top = 0
+anchor_right = 0
+anchor_bottom = 0
+offset_left = 556.30005
+offset_top = 1406.6
+offset_right = 1900.19995
+offset_bottom = 1486.6
+pivot_offset = Vector2(0, 0)
+flat = true
+focus_mode = 0
+
+[node name="Button (Legacy) (12)" type="Button" parent="UI_Book/Root/Panel/乐山复议案例"]
+anchor_left = 0
+anchor_top = 0
+anchor_right = 0
+anchor_bottom = 0
+offset_left = 556.30005
+offset_top = 1514.2
+offset_right = 1900.19995
+offset_bottom = 1594.2
+pivot_offset = Vector2(0, 0)
+flat = true
+focus_mode = 0
+
+[node name="Button (Legacy) (13)" type="Button" parent="UI_Book/Root/Panel/乐山复议案例"]
+anchor_left = 0
+anchor_top = 0
+anchor_right = 0
+anchor_bottom = 0
+offset_left = 556.30005
+offset_top = 1623.9999
+offset_right = 1900.19995
+offset_bottom = 1703.9999
+pivot_offset = Vector2(0, 0)
+flat = true
+focus_mode = 0
+
+[node name="Button (Legacy) (14)" type="Button" parent="UI_Book/Root/Panel/乐山复议案例"]
+anchor_left = 0
+anchor_top = 0
+anchor_right = 0
+anchor_bottom = 0
+offset_left = 1944
+offset_top = 522.10583
+offset_right = 3287.8999
+offset_bottom = 605.50003
+pivot_offset = Vector2(0, 0)
+flat = true
+focus_mode = 0
+
+[node name="乐山执法案例" type="Control" parent="UI_Book/Root/Panel"]
+anchor_left = 0
+anchor_top = 0
+anchor_right = 1
+anchor_bottom = 1
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+pivot_offset = Vector2(1920, 1080)
+mouse_filter = 2
+script = ExtResource("anli")
+book_path = NodePath("../../../../Book")
+buttons = [NodePath("Button (Legacy)"), NodePath("Button (Legacy) (1)"), NodePath("Button (Legacy) (2)"), NodePath("Button (Legacy) (3)"), NodePath("Button (Legacy) (4)")]
+pages = PackedInt32Array(79, 81, 83, 85, 87)
+
+[node name="Button (Legacy)" type="Button" parent="UI_Book/Root/Panel/乐山执法案例"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 20.4
+offset_top = -301.32785
+offset_right = 1287.6
+offset_bottom = -195.73075
+pivot_offset = Vector2(633.6, 52.79855)
+flat = true
+focus_mode = 0
+
+[node name="Button (Legacy) (1)" type="Button" parent="UI_Book/Root/Panel/乐山执法案例"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 20.4
+offset_top = -160.14628
+offset_right = 1287.6
+offset_bottom = -81.20138
+pivot_offset = Vector2(633.6, 39.47245)
+flat = true
+focus_mode = 0
+
+[node name="Button (Legacy) (2)" type="Button" parent="UI_Book/Root/Panel/乐山执法案例"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 20.4
+offset_top = -39.47245
+offset_right = 1287.6
+offset_bottom = 55.21685
+pivot_offset = Vector2(633.6, 47.34465)
+flat = true
+focus_mode = 0
+
+[node name="Button (Legacy) (3)" type="Button" parent="UI_Book/Root/Panel/乐山执法案例"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 20.4
+offset_top = 95.65536
+offset_right = 1287.6
+offset_bottom = 201.21756
+pivot_offset = Vector2(633.6, 52.7811)
+flat = true
+focus_mode = 0
+
+[node name="Button (Legacy) (4)" type="Button" parent="UI_Book/Root/Panel/乐山执法案例"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 20.4
+offset_top = 253.2189
+offset_right = 1287.6
+offset_bottom = 358.7811
+pivot_offset = Vector2(633.6, 52.7811)
+flat = true
+focus_mode = 0
+
+[node name="FanShu" type="Node" parent="."]
+script = ExtResource("fanshu")
+book_path = NodePath("../Book")
+page_material_template = ExtResource("page_front")
+page_filler_material = ExtResource("page_left")
+camera_path = NodePath("../Main Camera")
+feng_mian_manager_path = NodePath("../FengMianManager")
+next_button_path = NodePath("../UI_Book/Root/Panel/下一页")
+back_feng_mian_path = NodePath("../UI_Top/Root/返回封面")
+back_first_path = NodePath("../UI_Top/Root/返回目录")
+page_dir = "res://assets/pages"
+toc_dir = "res://assets/toc/fuyi"
+an_li_manager_paths = [NodePath("../UI_Book/Root/Panel/推动中国法治进程典型案例"), NodePath("../UI_Book/Root/Panel/全国复议案例"), NodePath("../UI_Book/Root/Panel/全国执法案例"), NodePath("../UI_Book/Root/Panel/乐山复议案例"), NodePath("../UI_Book/Root/Panel/乐山执法案例")]
