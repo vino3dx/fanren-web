@@ -15,11 +15,32 @@ const DEFAULT_CAPACITY := 16
 ## 每帧最多预载几页（预载同样走同步读取，摊到多帧免得挤在一起）
 const PRELOAD_PER_FRAME := 1
 
+## 支持的图片格式（按优先级排序：同一序号有多种格式时取靠前的）
+const SUPPORTED_IMAGE_EXTS := ["png", "jpg", "jpeg", "webp", "bmp", "tga", "svg"]
+
+static func is_supported_image(path: String) -> bool:
+	return SUPPORTED_IMAGE_EXTS.has(path.get_extension().to_lower())
+
+## 在目录里按「纯数字文件名」找图，自动尝试所有支持的扩展名。
+## 返回资源路径，找不到返回空字符串。
+static func find_image(dir: String, index: int) -> String:
+	var base := dir.rstrip("/")
+	for ext in SUPPORTED_IMAGE_EXTS:
+		var path := "%s/%d.%s" % [base, index, ext]
+		if ResourceLoader.exists(path):
+			return path
+	return ""
+
+## 同一序号有多种格式时的优先级（越小越优先）
+static func ext_rank(ext: String) -> int:
+	var rank := SUPPORTED_IMAGE_EXTS.find(ext.to_lower())
+	return rank if rank >= 0 else SUPPORTED_IMAGE_EXTS.size()
+
 var page_dir: String
 var template: Material
 var capacity: int = DEFAULT_CAPACITY
 ## 页码 → 图片序号的偏移：图片 i 对应书页 i + image_offset
-## （前 4 页是印刷目录，图片 1 是章节/书名页不进书，因此为 3）
+## （内容自带扉页/目录时为 0，即书页 p 显示图片 p；前置印刷目录时通常为 3）
 var image_offset: int = 3
 
 var load_count: int = 0
@@ -28,6 +49,7 @@ var _entries: Dictionary = {}     # page_number -> Material
 var _order: Array = []            # LRU：尾部最新
 var _pending: Array = []          # 待预载的页码
 var _images: Dictionary = {}      # 实际存在的图片序号
+var _files: Dictionary = {}       # 图片序号 -> 实际文件名（含扩展名）
 var _keep: Dictionary = {}        # 禁止淘汰的页码（当前可视范围）
 var _max_page: int = 0
 
@@ -44,20 +66,27 @@ func page_of_image(image_index: int) -> int:
 	return image_index + image_offset
 
 ## 扫描目录，得到可用页数（避免逐页 ResourceLoader.exists）
+## 支持 png/jpg/jpeg/webp/bmp/tga/svg，同一序号有多个格式时按优先级取一个
 func probe_max_page(limit: int = 400) -> int:
 	var m := 0
 	_images.clear()
+	_files.clear()
 	var da := DirAccess.open(page_dir)
 	if da == null:
+		push_error("PageCache: 打不开图片目录 %s" % page_dir)
 		return 0
 	for f in da.get_files():
 		var ext := f.get_extension().to_lower()
-		if ext != "png" and ext != "jpg" and ext != "jpeg" and ext != "webp":
+		if not SUPPORTED_IMAGE_EXTS.has(ext):
 			continue
 		var n := f.get_basename().to_int()
-		if n > 0 and n <= limit:
-			_images[n] = true
-			m = maxi(m, n)
+		if n <= 0 or n > limit:
+			continue
+		if _files.has(n) and ext_rank(ext) >= ext_rank(_files[n].get_extension()):
+			continue
+		_files[n] = f
+		_images[n] = true
+		m = maxi(m, n)
 	_max_page = m
 	return _max_page
 
@@ -79,7 +108,10 @@ func pending_count() -> int:
 	return _pending.size()
 
 func path_of_page(page_number: int) -> String:
-	return "%s/%d.png" % [page_dir, image_of_page(page_number)]
+	var img := image_of_page(page_number)
+	if not _files.has(img):
+		return ""
+	return "%s/%s" % [page_dir, _files[img]]
 
 ## 取材质：命中直接返回，未命中同步加载（BC7 下约 2~4 ms）
 func get_material(page_number: int) -> Material:
@@ -102,7 +134,7 @@ func load_now(page_number: int) -> Material:
 	if not _images.has(image_of_page(page_number)):
 		return null
 	var path := path_of_page(page_number)
-	if not ResourceLoader.exists(path):
+	if path == "" or not ResourceLoader.exists(path):
 		return null
 	var tex := ResourceLoader.load(path, "Texture2D", ResourceLoader.CACHE_MODE_IGNORE) as Texture2D
 	if tex == null:

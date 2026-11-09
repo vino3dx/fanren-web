@@ -12,17 +12,22 @@ config_version=5
 
 config/name="翻书"
 config/description="3D 翻书阅读器：封面、目录跳转、逐页翻动"
-run/main_scene="res://scenes/main_shenpan.tscn"
+run/main_scene="res://scenes/main_fuyi.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 
 [display]
 
 window/size/viewport_width=3840
 window/size/viewport_height=2160
-window/size/window_width_override=1600
-window/size/window_height_override=900
+window/size/borderless=true
+window/size/window_width_override=1920
+window/size/window_height_override=1080
 window/stretch/mode="canvas_items"
 window/stretch/aspect="keep_width"
+
+[dotnet]
+
+project/assembly_name="翻书"
 
 [filesystem]
 

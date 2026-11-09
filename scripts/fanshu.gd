@@ -86,7 +86,7 @@ func _setup_pages(max_img: int) -> void:
 		if tex:
 			book.set_page_data(i, _make_material(tex))
 		else:
-			push_warning("缺少目录页图片: %s/%d.png" % [toc_dir, i])
+			push_warning("缺少目录页图片: %s/%d.*" % [toc_dir, i])
 	# 正文页：只占位，材质由 PageCache 按需加载
 	var page_count: int = TOC_PAGE_COUNT + maxi(max_img - 1, 0)
 	while book.last_page_number < page_count:
@@ -95,8 +95,9 @@ func _setup_pages(max_img: int) -> void:
 	book.set_page_number(1)
 
 func _load_toc_texture(index: int) -> Texture2D:
-	var path := "%s/%d.png" % [toc_dir, index]
-	if not ResourceLoader.exists(path):
+	# 目录页同样支持 png/jpg/jpeg/webp/bmp/tga/svg
+	var path := PageCache.find_image(toc_dir, index)
+	if path == "":
 		return null
 	return load(path) as Texture2D
 

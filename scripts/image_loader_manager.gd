@@ -32,8 +32,9 @@ func _ready() -> void:
 func load_images_from_streaming_assets() -> void:
 	loaded_materials.clear()
 	for i in range(1, MAX_PAGE_PROBE + 1):
-		var path := "%s/%d.png" % [PAGE_DIR, i]
-		if not ResourceLoader.exists(path):
+		# 支持 png/jpg/jpeg/webp/bmp/tga/svg（PageCache 里统一维护格式列表）
+		var path := PageCache.find_image(PAGE_DIR, i)
+		if path == "":
 			continue
 		var tex := load(path) as Texture2D
 		if tex == null:

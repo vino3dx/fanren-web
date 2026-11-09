@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://chup816j4vgjy"]
 
+[ext_resource type="Texture2D" uid="uid://d07y1gqdy4y40" path="res://assets/ui/cover.png" id="7_3oopi"]
 [ext_resource type="Script" uid="uid://1imtpq6svr7i" path="res://scripts/an_li_manager.gd" id="anli"]
 [ext_resource type="Script" uid="uid://c3bc5gh2v0102" path="res://scripts/background_video.gd" id="bgvideo"]
 [ext_resource type="PackedScene" path="res://scenes/book.tscn" id="book"]
@@ -8,7 +9,6 @@
 [ext_resource type="Script" uid="uid://b358kcijcqj1y" path="res://scripts/image_loader_manager.gd" id="imgloader"]
 [ext_resource type="Material" path="res://assets/materials/page_front.tres" id="page_front"]
 [ext_resource type="Material" path="res://assets/materials/book_page_left.tres" id="page_left"]
-[ext_resource type="Texture2D" uid="uid://b1lqdyngxdgxf" path="res://assets/ui/审判案例.png" id="tex_Resources_审判案例_png"]
 [ext_resource type="Texture2D" uid="uid://b1520tqpjhvte" path="res://assets/ui/翻页按钮.png" id="tex_Resources_翻页按钮_png"]
 [ext_resource type="Texture2D" uid="uid://ds0jkbbvbklda" path="res://assets/ui/返回目录按钮.png" id="tex_Resources_返回目录按钮_png"]
 [ext_resource type="Texture2D" uid="uid://cy4gcffh108n6" path="res://assets/ui/返回封面.png" id="tex_返回封面_png"]
@@ -81,6 +81,8 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 
 [node name="Image" type="TextureRect" parent="Cover/Root" unique_id=1803583925]
@@ -89,7 +91,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 pivot_offset = Vector2(1920, 1080)
 mouse_filter = 0
-texture = ExtResource("tex_Resources_审判案例_png")
+texture = ExtResource("7_3oopi")
 expand_mode = 1
 
 [node name="UI_Top" type="CanvasLayer" parent="." unique_id=1223974036]
@@ -99,6 +101,8 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 
 [node name="返回目录" type="TextureButton" parent="UI_Top/Root" unique_id=576741960]
@@ -141,6 +145,8 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 
 [node name="Panel" type="Control" parent="UI_Book/Root" unique_id=483420174]
