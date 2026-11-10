@@ -1,6 +1,6 @@
 extends Node
-## 封面/正文切换（对应 Unity FengMianManager.cs）
-## 600 秒无操作自动回到封面；点击任意位置进入书本界面。
+## 封面 / 正文切换：点封面任意处进书，久无操作自动回封面。
+## 点击只认「没有被 UI 吃掉」的事件，所以点左下角的音乐开关不会顺带进书。
 class_name FengMianManager
 
 @export var canvas_path: NodePath = NodePath("../Cover")
@@ -21,14 +21,17 @@ func _process(delta: float) -> void:
 	if times > max_times:
 		set_first()
 
-func _input(event: InputEvent) -> void:
+func _unhandled_input(event: InputEvent) -> void:
+	# 用 _unhandled_input 而不是 _input：点在按钮上（比如左下角的音乐开关）时，
+	# 事件已经被 GUI 吃掉，不会顺带进书。
+	var pressed := false
 	if event is InputEventMouseButton:
 		var e := event as InputEventMouseButton
-		if e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
-			show_book_ui()
+		pressed = e.pressed and e.button_index == MOUSE_BUTTON_LEFT
 	elif event is InputEventScreenTouch:
-		if (event as InputEventScreenTouch).pressed:
-			show_book_ui()
+		pressed = (event as InputEventScreenTouch).pressed
+	if pressed:
+		show_book_ui()
 
 func show_book_ui() -> void:
 	times = 0.0

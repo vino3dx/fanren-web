@@ -32,6 +32,7 @@ Godot_v4.7.2-stable_win64.exe --path <工程目录> scenes/main_shenpan.tscn
 | 点目录按钮 | 直接翻到对应页（多页连续翻动） |
 | 「返回目录」 | 回到第 1 页 |
 | 「返回封面」 | 回到封面 |
+| 左下角音乐符号 | 静音 / 解除静音（图标一直慢速旋转） |
 | 无操作 600 秒 | 自动回到封面 |
 
 点击翻页依赖场景里 `SimpleTouchPad` 下的 `Page Left` / `Page Right` 两个碰撞盒，
@@ -47,6 +48,7 @@ scenes/
   page.tscn            单张翻动页
   main_shenpan.tscn    审判案例
   main_fuyi.tscn       凡人修仙传（默认主场景）
+  music_button.tscn    左下角音乐开关（自带播放器，可整段拖到任何场景）
 scripts/
   endless_book.gd      书本状态机与翻页调度（页码、状态切换、页材质）
   page.gd              单张翻动页的翻动动画
@@ -59,6 +61,7 @@ scripts/
   image_loader_manager.gd 外部图片加载（默认只提供接口，不预载）
   simple_touch_pad.gd  左右页点击区域
   background_video.gd  背景视频（贴在相机前方的全屏四边形上）
+  music_toggle.gd      音乐开关（旋转图标 + 静音切换 + 独立 BGM 总线）
 assets/
   models/              书本与替身模型（FBX）
   materials/           书页、封面、单页的材质
@@ -67,6 +70,7 @@ assets/
   pages_shenpan/       正文页图片（审判案例）
   toc/fuyi/            印刷目录页图片（4 张）
   toc/shenpan/         印刷目录页图片（4 张）
+  audio/               背景音乐（不凡.mp3）
   video/               背景视频（mp4 源文件 + 实际播放的 ogv）
   fonts/               备用中文字体
 ```
@@ -175,6 +179,31 @@ ffmpeg -y -i "assets/video/粒子背景.mp4" \
 换视频时让它和视频实际分辨率一致。背景是拉伸铺满整个窗口的，窗口比例变化会自动重新适配。
 不想要背景视频，把 `VideoBackground` 节点禁用即可。
 
+### 7. 背景音乐与静音开关
+
+背景音乐是一个可以整段复用的组件：`scenes/music_button.tscn`（脚本 `scripts/music_toggle.gd`）。
+它同时包含播放器和左下角的圆形开关，拖进场景就能用，不需要另外放 `AudioStreamPlayer`。
+
+- 音乐文件：`assets/audio/不凡.mp3`，在 `music_button.tscn` 里作为 `stream` 引用（**不要**把 mp3
+  拖进场景本身，那样会把整段音频以 base64 内嵌进场景，`.tscn` 会膨胀到 2 MB 量级，保存/加载都变慢）
+- 循环：mp3 的导入参数里 `loop=true`，另外脚本运行时会再确认一次，换素材也不容易漏
+- 静音：走单独的 `BGM` 总线（不存在会自动创建），不影响以后加的其它音效
+- 外观：图标 `assets/ui/music_on.svg` / `music_off.svg`，尺寸和位置在 `music_button.tscn` 里改
+  （`Root/Spin` 和 `Root/Hit` 的 `offset_*`，默认左下角 64，按钮 150×150，按 3840×2160 设计坐标）
+
+| 想改 | 改哪里 |
+| --- | --- |
+| 换音乐 | `music_button.tscn` 里 `Player` 节点的 `stream` |
+| 音量 | `MusicButton` 节点 → `volume_db`（默认 -6 dB） |
+| 旋转速度 | `MusicButton` 节点 → `spin_speed`（度/秒，默认 22；设 0 即不转） |
+| 静音时是否继续转 | `MusicButton` 节点 → `spin_always` |
+| 正常 / 静音时透明度 | `active_alpha` / `muted_alpha` |
+| 按钮位置、大小 | `music_button.tscn` 里 `Root/Spin`、`Root/Hit` 的 `offset_*` 与 `pivot_offset` |
+
+`MusicToggle` 也可以从代码控制：`set_muted(true)`、`toggle_mute()`、`is_muted()`。
+
+> 封面用的是「点任意处进书」，但播的是 `_unhandled_input`，所以点音乐开关只会静音，不会顺带进书。
+
 ## 关键参数速查
 
 | 想改什么 | 改哪里 |
@@ -193,6 +222,7 @@ ffmpeg -y -i "assets/video/粒子背景.mp4" \
 | 页面缓存张数 / 预载半径 | `fanshu.gd` → `CACHE_CAPACITY`、`PRELOAD_BACK`、`PRELOAD_FORWARD` |
 | 自动回封面时间 | 场景里 `FengMianManager` 节点 → `max_times`（秒） |
 | 背景视频 | 场景里 `VideoBackground` 节点 → `video_path`、`resolution` |
+| 背景音乐 / 音量 / 转速 | 场景里 `MusicButton` 节点 → `stream`（在 `music_button.tscn`）、`volume_db`、`spin_speed` |
 
 ## 翻页动画是怎么做的
 

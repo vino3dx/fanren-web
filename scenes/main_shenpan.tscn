@@ -13,6 +13,7 @@
 [ext_resource type="Texture2D" uid="uid://ds0jkbbvbklda" path="res://assets/ui/返回目录按钮.png" id="tex_Resources_返回目录按钮_png"]
 [ext_resource type="Texture2D" uid="uid://cy4gcffh108n6" path="res://assets/ui/返回封面.png" id="tex_返回封面_png"]
 [ext_resource type="Script" uid="uid://cr7a5fwwniuit" path="res://scripts/simple_touch_pad.gd" id="touchpad"]
+[ext_resource type="PackedScene" path="res://scenes/music_button.tscn" id="music"]
 
 [sub_resource type="Environment" id="env"]
 background_mode = 1
@@ -90,7 +91,7 @@ layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 pivot_offset = Vector2(1920, 1080)
-mouse_filter = 0
+mouse_filter = 2
 texture = ExtResource("7_3oopi")
 expand_mode = 1
 
@@ -541,3 +542,5 @@ page_dir = "res://assets/pages_shenpan"
 an_li_manager_paths = Array[NodePath]([NodePath("../UI_Book/Root/Panel/诉讼案例"), NodePath("../UI_Book/Root/Panel/全国案例"), NodePath("../UI_Book/Root/Panel/乐山案例")])
 page_material_template = ExtResource("page_front")
 page_filler_material = ExtResource("page_left")
+
+[node name="MusicButton" parent="." instance=ExtResource("music")]

@@ -1,6 +1,2 @@
-res://scenes/main_shenpan.tscn
 res://scenes/main_fuyi.tscn
-res://scripts/fanshu2.gd
-res://scripts/fanshu.gd
-res://scripts/image_loader_manager.gd
-res://scripts/page_cache.gd
+res://scripts/feng_mian_manager.gd

@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://cadbd4fqph3e6"]
+[gd_scene format=4 uid="uid://cadbd4fqph3e6"]
 
 [ext_resource type="Texture2D" uid="uid://d07y1gqdy4y40" path="res://assets/ui/cover.png" id="9_7bftg"]
 [ext_resource type="Script" uid="uid://c3bc5gh2v0102" path="res://scripts/background_video.gd" id="bgvideo"]
@@ -13,6 +13,7 @@
 [ext_resource type="Texture2D" uid="uid://cy4gcffh108n6" path="res://assets/ui/返回封面.png" id="tex_返回封面_png"]
 [ext_resource type="Script" uid="uid://cajsn5qnjwx8g" path="res://scripts/toc_page.gd" id="tocpage"]
 [ext_resource type="Script" uid="uid://cr7a5fwwniuit" path="res://scripts/simple_touch_pad.gd" id="touchpad"]
+[ext_resource type="PackedScene" path="res://scenes/music_button.tscn" id="music"]
 
 [sub_resource type="Environment" id="env"]
 background_mode = 1
@@ -25,7 +26,6 @@ size = Vector3(0.30866468, 0.0023140425, 0.37161744)
 
 [sub_resource type="BoxShape3D" id="shape_right"]
 size = Vector3(0.30866468, 0.0023140425, 0.37161744)
-
 [node name="Main" type="Node3D" unique_id=164545821]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=99954261]
@@ -134,7 +134,7 @@ layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 pivot_offset = Vector2(1920, 1080)
-mouse_filter = 0
+mouse_filter = 2
 texture = ExtResource("9_7bftg")
 expand_mode = 1
 stretch_mode = 6
@@ -254,3 +254,5 @@ script = ExtResource("fanshu")
 front_pages = 4
 page_material_template = ExtResource("page_front")
 page_filler_material = ExtResource("page_left")
+
+[node name="MusicButton" parent="." instance=ExtResource("music")]
