@@ -1,10 +1,10 @@
 extends Node
-## main_fuyi 的主逻辑
+## 主场景 main.tscn 的翻书逻辑
 ##
 ## 页码布局：
 ##   书页 1 .. toc_page_count      = 印刷目录（来自 toc_dir 里的 1..N 图，可为 0）
 ##   书页 1+offset ..               = 正文，书页 p 显示图片 p - image_offset
-## 内容自带扉页/目录时（现在这套《凡人修仙传》就是），把 toc_page_count 与
+## 内容自带扉页/目录时（现在这套《凡人修仙传·仙侠手账》就是），把 toc_page_count 与
 ## image_offset 都设成 0，书页 p 直接对应第 p 张图。
 ##
 ## 目录点击区不再写死坐标：场景里每个 TocPage 节点自己描述「印在第几页、条目区在哪、
@@ -21,8 +21,8 @@ const WARMUP_PAGES := 6
 
 ## 正文图片目录（支持 png/jpg/jpeg/webp/bmp/tga/svg，纯数字文件名）
 @export var page_dir: String = "res://assets/pages"
-## 印刷目录页目录（toc_page_count = 0 时不需要）
-@export var toc_dir: String = "res://assets/toc/fuyi"
+## 印刷目录页目录（toc_page_count = 0 时不需要；本工程内容自带目录页，留空即可）
+@export var toc_dir: String = ""
 ## 书前插入的印刷目录页数（0 = 不用外部目录，正文图片自带目录页）
 @export var toc_page_count: int = 0
 ## 图片序号 → 书页的偏移：书页 = 图片序号 + image_offset
@@ -116,11 +116,13 @@ func _setup_pages(max_img: int) -> void:
 	while book.last_page_number < page_count:
 		book.add_page_data()
 	var content_pages: int = maxi(page_count - toc_page_count, 0)
-	print("main_fuyi: 目录 %d 页 + 正文 %d 页（图片 %d..%d）" % [
+	print("Fanshu2: 目录 %d 页 + 正文 %d 页（图片 %d..%d）" % [
 		toc_page_count, content_pages, image_offset + 1, max_img])
 	book.set_page_number(1)
 
 func _load_toc_texture(index: int) -> Texture2D:
+	if toc_dir.is_empty():
+		return null
 	# 目录页同样支持 png/jpg/jpeg/webp/bmp/tga/svg
 	var path := PageCache.find_image(toc_dir, index)
 	if path == "":

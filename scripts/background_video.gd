@@ -2,14 +2,14 @@ extends Node3D
 ## 背景视频：把视频贴在相机前方一块全屏四边形上当背景（相当于「远平面」背景）。
 ##
 ## 性能注意：视频是 CPU 软解的，分辨率直接决定每帧开销
-## （4K 每次解码 50~140 ms，1280x720 只要 1~2 ms）。素材已转成 720p，
-## 这里落地的 SubViewport 也按 720p，超出这个分辨率解码纯属浪费。
+## （4K 每次解码 50~140 ms，1080p 约 4~8 ms，720p 只要 1~2 ms）。素材是 1080p，
+## 这里落地的 SubViewport 与素材同尺寸，避免二次缩放把 1080p 的清晰度白扔掉。
 class_name BackgroundVideo
 
 @export var camera: Camera3D = null
-@export var video_path: String = "res://assets/video/粒子背景.ogv"
+@export var video_path: String = "res://assets/video/bg.ogv"
 @export var distance: float = 5.0
-@export var resolution: Vector2i = Vector2i(1280, 720)
+@export var resolution: Vector2i = Vector2i(1920, 1080)
 
 var _quad: MeshInstance3D = null
 var _mesh: QuadMesh = null

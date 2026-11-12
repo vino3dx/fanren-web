@@ -1,17 +1,18 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene format=3 uid="uid://gq4em8bfqu33"]
 
-[ext_resource type="Script" path="res://scripts/music_toggle.gd" id="1_music"]
-[ext_resource type="Texture2D" path="res://assets/ui/music_on.svg" id="2_on"]
-[ext_resource type="Texture2D" path="res://assets/ui/music_off.svg" id="3_off"]
-[ext_resource type="AudioStream" path="res://assets/audio/不凡.mp3" id="4_bgm"]
+[ext_resource type="Script" uid="uid://db6aevkw8xhb" path="res://scripts/music_toggle.gd" id="1_music"]
+[ext_resource type="Texture2D" uid="uid://dlqwk4mm8ppv6" path="res://assets/ui/music_on.svg" id="2_on"]
+[ext_resource type="Texture2D" uid="uid://dqo7fvttd463l" path="res://assets/ui/music_off.svg" id="3_off"]
+[ext_resource type="AudioStream" uid="uid://ddqap6hdst1iy" path="res://assets/audio/不凡.mp3" id="4_bgm"]
 
-[node name="MusicButton" type="CanvasLayer"]
+[node name="MusicButton" type="CanvasLayer" unique_id=1308319093]
 layer = 20
 script = ExtResource("1_music")
 icon_on = ExtResource("2_on")
 icon_off = ExtResource("3_off")
 
-[node name="Root" type="Control" parent="."]
+[node name="Root" type="Control" parent="." unique_id=137575831]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -19,8 +20,8 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Spin" type="Control" parent="Root"]
-layout_mode = 0
+[node name="Spin" type="Control" parent="Root" unique_id=1026672401]
+anchors_preset = 0
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 64.0
@@ -30,19 +31,19 @@ offset_bottom = -64.0
 pivot_offset = Vector2(75, 75)
 mouse_filter = 2
 
-[node name="Icon" type="TextureRect" parent="Root/Spin"]
+[node name="Icon" type="TextureRect" parent="Root/Spin" unique_id=2107931916]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 texture = ExtResource("2_on")
 expand_mode = 1
 stretch_mode = 5
-mouse_filter = 2
 
-[node name="Hit" type="Button" parent="Root"]
+[node name="Hit" type="Button" parent="Root" unique_id=909482034]
 layout_mode = 0
 anchor_top = 1.0
 anchor_bottom = 1.0
@@ -54,5 +55,5 @@ focus_mode = 0
 mouse_default_cursor_shape = 2
 flat = true
 
-[node name="Player" type="AudioStreamPlayer" parent="."]
+[node name="Player" type="AudioStreamPlayer" parent="." unique_id=694608113]
 stream = ExtResource("4_bgm")

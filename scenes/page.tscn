@@ -1,7 +1,20 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://dwwivy3dresa5"]
 
-[ext_resource type="PackedScene" path="res://assets/models/Page.fbx" id="1_fbx"]
-[ext_resource type="Script" path="res://scripts/page.gd" id="2_script"]
+[ext_resource type="PackedScene" uid="uid://cvexmq4edrmg2" path="res://assets/models/Page.fbx" id="1_fbx"]
+[ext_resource type="Script" uid="uid://dbxtn5p8hvwtx" path="res://scripts/page.gd" id="2_script"]
 
-[node name="Page" instance=ExtResource("1_fbx")]
+[node name="Page" unique_id=2014553866 instance=ExtResource("1_fbx")]
 script = ExtResource("2_script")
+
+[node name="Skeleton3D" parent="Page_Armature" parent_id_path=PackedInt32Array(1342285265) index="0" unique_id=2097122348]
+bones/0/rotation = Quaternion(0.5279985, -0.5279984, -0.47033775, 0.4703378)
+bones/1/rotation = Quaternion(0.08351056, 1.1816465e-08, -4.399426e-10, 0.9965069)
+bones/2/rotation = Quaternion(0.15518509, 2.4032964e-08, 1.2283501e-09, 0.9878854)
+bones/3/rotation = Quaternion(0.09410669, 1.5010015e-08, 4.017281e-09, 0.9955622)
+bones/4/rotation = Quaternion(0.15292726, 1.9107892e-08, 3.3990237e-09, 0.9882375)
+bones/5/rotation = Quaternion(0.16493435, 1.4478375e-08, 1.5187154e-09, 0.98630464)
+bones/6/rotation = Quaternion(-0.00012877402, -0.0015458558, 0.0039572534, 0.99999106)
+bones/7/rotation = Quaternion(-0.034018315, -0.0005157541, 0.0016367643, 0.99941975)
+bones/8/rotation = Quaternion(-0.07425297, -5.426301e-10, 1.4451268e-10, 0.9972395)
+bones/9/rotation = Quaternion(-0.16819662, -5.786874e-10, -1.3709135e-10, 0.9857535)
+bones/10/rotation = Quaternion(-0.23682232, 7.543328e-09, -5.9833184e-08, 0.97155297)

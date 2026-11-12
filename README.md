@@ -3,24 +3,19 @@
 一个基于 Godot 4 的 3D 书本阅读器。封面点开后进入书本，书页像真书一样带着书脊弯曲和页角掀起翻开，
 支持逐页翻动、长按连翻、目录按钮直达指定章节，页面内容全部来自外置图片，换一套图就是一本新书。
 
-- 引擎：Godot 4.7（GDScript），渲染后端 Compatibility（OpenGL 3.3）
-- 设计分辨率 3840×2160，默认窗口 1600×900（`keep_width` 适配，16:9 以外补背景色）
-- 内置两套内容：`main_fuyi.tscn`（《凡人修仙传·仙侠手账》，45 页，默认主场景）与
-  `main_shenpan.tscn`（审判案例，81 页）
+- 引擎：Godot 4.6 及以上（GDScript），渲染后端 Compatibility（OpenGL 3.3）
+- 设计分辨率 3840×2160，默认窗口 1920×1080（`keep_width` 适配，16:9 以外补背景色）
+- 内容：《凡人修仙传·仙侠手账》，`assets/pages/` 下 45 张 jpg，主场景 `scenes/main.tscn`
 
 ## 运行
 
-用 Godot 4.7 打开本目录下的 `project.godot` 直接运行，或命令行：
+用 Godot 打开本目录下的 `project.godot` 直接运行，或命令行：
 
 ```bash
-# 运行主场景（main_fuyi.tscn）
-Godot_v4.7.2-stable_win64.exe --path <工程目录>
-
-# 运行另一套场景（审判案例）
-Godot_v4.7.2-stable_win64.exe --path <工程目录> scenes/main_shenpan.tscn
+Godot_v4.6-stable_win64.exe --path <工程目录>
 ```
 
-切换默认启动场景：改 `project.godot` 里的 `application/run/main_scene`。
+启动场景由 `project.godot` 里的 `application/run/main_scene` 决定（当前 `res://scenes/main.tscn`）。
 
 ## 操作方式
 
@@ -41,75 +36,57 @@ Godot_v4.7.2-stable_win64.exe --path <工程目录> scenes/main_shenpan.tscn
 ## 目录结构
 
 ```
-project.godot          工程配置（主场景、分辨率、渲染后端）
-export_presets.cfg     Windows 导出预设
+project.godot            工程配置（主场景、分辨率、渲染后端）
+export_presets.cfg       Web 导出预设
 scenes/
-  book.tscn            书本本体：骨骼动画书 + 5 个静态替身 + 5 张翻动页
-  page.tscn            单张翻动页
-  main_shenpan.tscn    审判案例
-  main_fuyi.tscn       凡人修仙传（默认主场景）
-  music_button.tscn    左下角音乐开关（自带播放器，可整段拖到任何场景）
+  main.tscn              主场景：书本 + 相机 + 背景视频 + UI + 目录覆盖层
+  book.tscn              书本本体：骨骼动画书 + 5 个静态替身 + 若干翻动页
+  page.tscn              单张翻动页
+  music_button.tscn      左下角音乐开关（自带播放器，可整段拖到任何场景）
 scripts/
-  endless_book.gd      书本状态机与翻页调度（页码、状态切换、页材质）
-  page.gd              单张翻动页的翻动动画
-  page_cache.gd        页面材质缓存（LRU + 邻页预载）
-  fanshu.gd            审判案例的主逻辑（页数、UI 显隐、点击翻页）
-  fanshu2.gd           凡人修仙传的主逻辑（页序/目录页数可在场景里配）
-  feng_mian_manager.gd 封面 / 正文切换、自动回封面
-  an_li_manager.gd     目录按钮 → 指定页（审判案例用的老方案）
-  toc_page.gd          目录点击区覆盖层（页框 + 垂直框自动排布，主场景用这个）
+  endless_book.gd        书本状态机与翻页调度（页码、状态切换、页材质）
+  page.gd                单张翻动页的翻动动画
+  page_cache.gd          页面材质缓存（LRU + 邻页预载）
+  fanshu2.gd             主逻辑（页数扫描、UI 显隐、点击翻页、目录接管）
+  feng_mian_manager.gd   封面 / 正文切换、自动回封面
+  toc_page.gd            目录点击区覆盖层（页框 + 垂直框自动排布）
   image_loader_manager.gd 外部图片加载（默认只提供接口，不预载）
-  simple_touch_pad.gd  左右页点击区域
-  background_video.gd  背景视频（贴在相机前方的全屏四边形上）
-  music_toggle.gd      音乐开关（旋转图标 + 静音切换 + 独立 BGM 总线）
+  simple_touch_pad.gd    左右页点击区域
+  background_video.gd    背景视频（贴在相机前方的全屏四边形上）
+  music_toggle.gd        音乐开关（旋转图标 + 静音切换 + 独立 BGM 总线）
 assets/
-  models/              书本与替身模型（FBX）
-  materials/           书页、封面、单页的材质
-  ui/                  封面图、翻页按钮、返回按钮
-  pages/               正文页图片（凡人修仙传，45 张 jpg）
-  pages_shenpan/       正文页图片（审判案例）
-  toc/fuyi/            印刷目录页图片（4 张）
-  toc/shenpan/         印刷目录页图片（4 张）
-  audio/               背景音乐（不凡.mp3）
-  video/               背景视频（mp4 源文件 + 实际播放的 ogv）
-  fonts/               备用中文字体
+  models/                书本与替身模型（FBX）
+  materials/             书页、封面、单页的材质
+  ui/                    封面图、翻页按钮、返回按钮、音乐图标
+  pages/                 正文页图片（45 张 jpg）
+  audio/                 背景音乐（不凡.mp3）
+  video/                 背景视频（bg.ogv，1920×1080 / 25fps / 无音轨）
 ```
 
-`.godot/` 是引擎的导入缓存，可随时删除，重新打开工程会自动重建（当前约 700 MB）。
+`.godot/` 是引擎的导入缓存，可以随时删除，重新打开工程会自动重建。
 
 ## 换成自己的内容
 
 ### 1. 正文页图片（最常改的一项）
 
-把图片按 **纯数字命名** 放进目标目录（默认 `assets/pages_shenpan/` 或 `assets/pages/`）。
-支持 `png`、`jpg/jpeg`、`webp`、`bmp`、`tga`、`svg`，同一序号有多个格式时按上面的顺序取第一个，
-所以换格式不用改代码，直接放图即可。
+把图片按 **纯数字命名** 放进 `assets/pages/`。支持 `png`、`jpg/jpeg`、`webp`、`bmp`、`tga`、`svg`，
+同一序号有多个格式时按上面的顺序取第一个，所以换格式不用改代码，直接放图即可。
 
 页数不用手工填，程序启动时扫描目录取最大序号。页序规则由场景里 `FanShu` 节点的两个属性决定：
 
 ```
-toc_page_count = 书前插入的印刷目录页数（来自 assets/toc/<套>/1..N）
-image_offset    = 书页 = 图片序号 + image_offset
+toc_page_count = 书前插入的印刷目录页数（来自 toc_dir，可为 0）
+image_offset   = 书页 = 图片序号 + image_offset
 ```
 
-- `main_shenpan.tscn`：`toc_page_count = 4`、`image_offset = 3`
-  （前 4 页是印刷目录，图片 1 是章节扉页不进书，正文从图片 2 开始）
-- `main_fuyi.tscn`：`toc_page_count = 0`、`image_offset = 0`
-  （图片自带目录页，书页 p 就是第 p 张图；`front_pages = 4` 表示前 4 页是目录，第 5 页起是正文）
+本工程用 `toc_page_count = 0`、`image_offset = 0`：图片自带目录页，书页 p 就是第 p 张图，
+`front_pages = 4` 表示前 4 页是目录，第 5 页起是正文。
 
 这套内容的换算关系是 **书页 = 页脚印的页码 + 4**：图片 5 是正文第 1 页（页脚印 `01`），
 图片 13 是第 9 页（`09`），图片 44 是第 40 页（`40`）。目录里的 `targets` 就按这个算 ——
 例如总目录里「卷一 · 页脚 01」对应书页 5。
 
-### 2. 印刷目录页
-
-`main_shenpan.tscn` 用 `assets/toc/shenpan/1..4.*`。这几张是静态材质，
-启动时就加载并常驻，不参与按需加载。
-
-`main_fuyi.tscn` 现在这套内容自带目录页（第 1 张是总目录，第 2~4 张是分卷目录，第 5 张起是正文），
-所以 `toc_page_count = 0`，`assets/toc/fuyi/` 不再被使用。
-
-### 3. 目录点击区（`TocPage`）
+### 2. 目录点击区（`TocPage`）
 
 目录文字是印在页面图片里的，所以需要一层透明点击区盖在上面。这一层由 `TocPage`
 （`scripts/toc_page.gd`）负责，**一个节点管一页**，不再逐个按钮写坐标。
@@ -148,38 +125,39 @@ image_offset    = 书页 = 图片序号 + image_offset
 
 `fanshu2.gd` 启动时会自动扫描 `Panel` 下所有 `TocPage`，**增删目录组不用改代码**。
 
-> `main_shenpan.tscn` 用的是老方案：分组节点挂 `AnLiManager`，靠 `buttons` + `pages` 两个
-> 数组把按钮和页码对应起来，按钮位置写死在 `offset_*` 里。功能一样，但没有自动排布。
-
-### 4. 封面与按钮图
+### 3. 封面与按钮图
 
 替换 `assets/ui/` 下的 PNG。封面是 `Cover` 层里的 `Image`（TextureRect），
 按钮是 `UI_Top` / `UI_Book` 里的 TextureButton，直接换贴图资源即可。
 
-### 5. 书本外观
+### 4. 书本外观
 
 - 书页/封面材质：`assets/materials/*.tres`
 - 书本模型：`assets/models/BookAnimated.fbx`（带骨骼动画），
   以及 5 个静态替身 `BookStandin*.fbx`（闭合前、开前、开中、开后、闭合后）。
   静止时显示替身、翻动时切到带动画的书，这是保证静态画面也能扛住高清渲染的做法。
 
-### 6. 背景视频
+### 5. 背景视频
 
-Godot 只支持 **Ogg Theora**，需要先转码。建议 **1280×720、25fps**，模糊的粒子背景足够清晰，
-再高只会白白增加解码开销：
+Godot 只支持 **Ogg Theora**，需要先转码。当前素材是 **1920×1080 / 25fps / Theora 质量模式 `-q:v 5`（约 10.8 Mbps）/ 无音轨 / 23 MB**：
 
 ```bash
-ffmpeg -y -i "assets/video/粒子背景.mp4" \
-	   -vf "scale=1280:720:flags=lanczos" \
-	   -c:v libtheora -q:v 8 -pix_fmt yuv420p -an \
-       "assets/video/粒子背景.ogv"
+ffmpeg -y -i "源视频.mp4" \
+       -vf "scale=1920:1080:flags=lanczos" \
+       -c:v libtheora -q:v 5 -g 64 -pix_fmt yuv420p \
+       -an \
+       "assets/video/bg.ogv"
 ```
 
-播放分辨率在 `VideoBackground` 节点的 `resolution` 属性（默认 1280×720），
+Theora 效率很低，同一段素材用固定码率 `-b:v 1500k` 会明显发糊（PSNR 仅 27 dB，`-q:v 5` 是 34 dB）；
+想更清楚就把 `-q:v` 提到 6（约 15 Mbps / 34 MB）。**不要**加音轨：背景音乐由
+`scenes/music_button.tscn` 单独负责，视频音轨只会和它叠在一起。
+
+播放分辨率在 `VideoBackground` 节点的 `resolution` 属性（脚本默认 1920×1080），
 换视频时让它和视频实际分辨率一致。背景是拉伸铺满整个窗口的，窗口比例变化会自动重新适配。
 不想要背景视频，把 `VideoBackground` 节点禁用即可。
 
-### 7. 背景音乐与静音开关
+### 6. 背景音乐与静音开关
 
 背景音乐是一个可以整段复用的组件：`scenes/music_button.tscn`（脚本 `scripts/music_toggle.gd`）。
 它同时包含播放器和左下角的圆形开关，拖进场景就能用，不需要另外放 `AudioStreamPlayer`。
@@ -211,15 +189,14 @@ ffmpeg -y -i "assets/video/粒子背景.mp4" \
 | 启动场景 | `project.godot` → `application/run/main_scene` |
 | 分辨率 / 窗口大小 | `project.godot` → `display/window/size/*` |
 | 页面图片目录 | 场景里 `FanShu` 节点 → `page_dir` |
-| 目录页图片目录 | 场景里 `FanShu` 节点 → `toc_dir` |
-| 印刷目录页数 | 场景里 `FanShu` 节点 → `toc_page_count`（`main_shenpan` 为常量 `TOC_PAGE_COUNT`） |
+| 印刷目录页目录 / 页数 | 场景里 `FanShu` 节点 → `toc_dir`、`toc_page_count` |
 | 图片序号偏移 | 场景里 `FanShu` 节点 → `image_offset` |
 | 前置页数（不响应点击翻页） | 场景里 `FanShu` 节点 → `front_pages` |
 | 目录条目与跳转页 | 场景里各 `TocPage` 节点 → `targets`、`titles` |
 | 目录条目区位置 | 场景里各 `TocPage` 节点 → `block_top`、`block_bottom` |
 | 目录悬停/按下高亮 | 场景里各 `TocPage` 节点 → `highlight_color`（alpha 设 0 关掉） |
 | 翻页时长 | `turn_to_next_page()` 里的 `0.5`（秒/页） |
-| 页面缓存张数 / 预载半径 | `fanshu.gd` → `CACHE_CAPACITY`、`PRELOAD_BACK`、`PRELOAD_FORWARD` |
+| 页面缓存张数 / 预载半径 | `fanshu2.gd` → `CACHE_CAPACITY`、`PRELOAD_BACK`、`PRELOAD_FORWARD` |
 | 自动回封面时间 | 场景里 `FengMianManager` 节点 → `max_times`（秒） |
 | 背景视频 | 场景里 `VideoBackground` 节点 → `video_path`、`resolution` |
 | 背景音乐 / 音量 / 转速 | 场景里 `MusicButton` 节点 → `stream`（在 `music_button.tscn`）、`volume_db`、`spin_speed` |
@@ -256,22 +233,22 @@ ffmpeg -y -i "assets/video/粒子背景.mp4" \
 这套程序在 GTX 级显卡上连续翻页可以稳定在 700 fps 以上（脚本 + 渲染总耗时约 1.5 ms/帧），
 关键靠三条约束，改内容时建议保持：
 
-1. **背景视频别用高分辨率。** Theora 是 CPU 软解，4K 单帧要 50~140 ms，1280×720 只要 1~2 ms，
-   而且是逐帧解码的，分辨率直接决定整机帧率上限。
-2. **页面贴图用 VRAM 压缩（BC7）。** `*.png.import` 里保持
+1. **背景视频别用高分辨率。** Theora 是 CPU 软解，4K 单帧要 50~140 ms，1080p 约 4~8 ms，
+   而且是逐帧解码的，分辨率直接决定整机帧率上限。现在的 `bg.ogv` 是 1080p / 约 10.8 Mbps / 无音轨。
+2. **页面贴图用 VRAM 压缩（BC7）。** `*.jpg.import` / `*.png.import` 里保持
    `compress/mode=2` + `compress/high_quality=true`。用「无损」的话，`.ctex` 内部仍是 PNG，
    每张首次使用要在主线程解码 17~31 ms、渲染线程再卡 40~70 ms，每翻一页掉好几帧。
    BC7 与源图差异只有 PSNR 47.8 dB（肉眼看不出），但换来 4 倍显存和 8 倍加载速度。
-   改过导入设置后需要重新导入：`godot --headless --path . --import`（上百张约 3~5 分钟）。
-3. **页面按需加载，不要启动时全量读。** 像审判案例那样 86 张 1920×2160 的图一次性读进来要
-   1.4 GB 显存、启动卡 6 秒。`PageCache` 只保留最近用过的 16 张并预载前后若干页，显存稳定在 200 MB 左右。
+   改过导入设置后需要重新导入：`godot --headless --path . --import`。
+3. **页面按需加载，不要启动时全量读。** 45 张 1920×2160 的图一次性读进来是 GB 级显存、
+   启动卡数秒。`PageCache` 只保留最近用过的 16 张并预载前后若干页，显存稳定在 200 MB 左右。
 
 导出时 `texture_format/s3tc_bptc` 必须保持开启，否则 BC7 贴图会失效。
 
 ## 打包
 
-`export_presets.cfg` 里已有一份 Windows 预设（导出到 `build/翻书.exe`），
-在 Godot 的「项目 → 导出」里直接导出即可。首次导出需要安装对应版本的导出模板。
+`export_presets.cfg` 里目前只有一份 **Web** 预设，导出路径未设置，在 Godot 的「项目 → 导出」
+里选定目标平台后即可导出。首次导出需要安装对应版本的导出模板。
 
 ## 常见问题
 
@@ -281,7 +258,7 @@ ffmpeg -y -i "assets/video/粒子背景.mp4" \
 
 **翻页方向或页序对不上**
 先确认「书页 → 图片」的换算：看正文第一页页脚印的页码，`image_offset = 第一张正文图的序号 - 1 - 页脚号`。
-本工程 `main_fuyi` 是 0（图片 5 = 页脚 01），`main_shenpan` 是 3。
+本工程是 0（图片 5 = 页脚 01）。
 
 **点目录某一行跳到隔壁或者差一页**
 `targets` 里的数字是**书页号**（即图片序号），不是页脚上印的页码。两者差多少见上面的换算。
@@ -291,6 +268,3 @@ ffmpeg -y -i "assets/video/粒子背景.mp4" \
 
 **翻页卡顿**
 先看背景视频分辨率，再看页面贴图的导入格式（见「性能要点」两条）。
-
-**中文字体显示异常**
-项目使用默认字体；`assets/fonts/msyh.ttc` 是备用字体，需要时在主题里指定。
