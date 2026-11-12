@@ -38,8 +38,8 @@ var _bus_index: int = -1
 func _ready() -> void:
 	_bus_index = _ensure_bus()
 	_setup_audio()
-	_hit.pressed.connect(toggle_mute)
 	_muted = start_muted
+	_hit.pressed.connect(_on_music_button_pressed)
 	_apply_state()
 
 func _process(delta: float) -> void:
@@ -66,6 +66,15 @@ func is_muted() -> bool:
 func toggle_mute() -> void:
 	set_muted(not _muted)
 
+func _on_music_button_pressed() -> void:
+	# Web 浏览器只允许在用户手势中启动音频。首次点击直接启动播放器，
+	# 随后的点击再按常规逻辑静音 / 解除静音。
+	if not _player.playing:
+		_player.play()
+		set_muted(false)
+		return
+	toggle_mute()
+
 func set_muted(value: bool) -> void:
 	_muted = value
 	_apply_state()
@@ -78,8 +87,6 @@ func _setup_audio() -> void:
 		(s as AudioStreamMP3).loop = true
 	elif s is AudioStreamOggVorbis:
 		(s as AudioStreamOggVorbis).loop = true
-	if s != null and not _player.playing:
-		_player.play()
 
 func _apply_state() -> void:
 	if _bus_index >= 0:

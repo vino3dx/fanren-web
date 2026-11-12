@@ -65,28 +65,26 @@ func image_of_page(page_number: int) -> int:
 func page_of_image(image_index: int) -> int:
 	return image_index + image_offset
 
-## 扫描目录，得到可用页数（避免逐页 ResourceLoader.exists）
+## 扫描页目录，得到可用页数
 ## 支持 png/jpg/jpeg/webp/bmp/tga/svg，同一序号有多个格式时按优先级取一个
+##
+## 这里不能用 DirAccess 枚举 res://：导出包里原始图片并不存在，只有
+## 「res://assets/pages/1.jpg.import」和「res://.godot/imported/*.ctex」，
+## 原始路径只活在 remap 表里。枚举拿到的全是 *.import，会被扩展名白名单滤掉，
+## 页数就成了 0（导出后「正文 0 页（图片 1..0）」）。改成按序号探测
+## ResourceLoader.exists —— remap 对它生效，编辑器和导出包行为一致。
 func probe_max_page(limit: int = 400) -> int:
 	var m := 0
 	_images.clear()
 	_files.clear()
-	var da := DirAccess.open(page_dir)
-	if da == null:
-		push_error("PageCache: 打不开图片目录 %s" % page_dir)
-		return 0
-	for f in da.get_files():
-		var ext := f.get_extension().to_lower()
-		if not SUPPORTED_IMAGE_EXTS.has(ext):
+	for i in range(1, limit + 1):
+		var path := find_image(page_dir, i)
+		if path.is_empty():
 			continue
-		var n := f.get_basename().to_int()
-		if n <= 0 or n > limit:
-			continue
-		if _files.has(n) and ext_rank(ext) >= ext_rank(_files[n].get_extension()):
-			continue
-		_files[n] = f
-		_images[n] = true
-		m = maxi(m, n)
+		# path_of_page() 用 "%s/%s" 拼接，这里必须存文件名
+		_files[i] = path.get_file()
+		_images[i] = true
+		m = i
 	_max_page = m
 	return _max_page
 

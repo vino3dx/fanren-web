@@ -10,10 +10,11 @@ config_version=5
 
 [application]
 
-config/name="凡人修仙传"
+config/name="fanren"
 config/description="凡人修仙传主体的 3D 翻书阅读器：封面、目录跳转、逐页翻动"
 run/main_scene="res://scenes/main.tscn"
 config/features=PackedStringArray("4.6", "GL Compatibility")
+config/icon="uid://dl4wgjwfsvj25"
 
 [display]
 
