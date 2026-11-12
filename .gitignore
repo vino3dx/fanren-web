@@ -7,6 +7,8 @@
 .godot/
 # Android 导出构建目录
 /android/
+.vscode/
+.workbuddy/
 
 # 旧版 Godot 3 残留（生成的导入缓存）
 .import/
